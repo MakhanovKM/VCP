@@ -263,28 +263,46 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   * @param  Len: Number of data received (in bytes)
   * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
   */
-static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
+
+
+
+
+static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-	                      memcpy (User_Data, Buf, *Len);			      // куда копируем - User_Data, откуда копируем -Buf (где лежат принятые данные), длину *Len
-												USBD_CDC_ReceivePacket (&hUsbDeviceFS);    // функция для отправки события о том, что пакет обработан
-												
-												//if ( strncmp (User_Data,"OFF", 3) )
-												if(User_Data[0]==0x04 & User_Data[1]==0x06)		
-													//Led_OFF;
-													HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-												
-							
-                        //if (strncmp (User_Data, "ON", 2))
-												if(User_Data[0]==5)	
-												//Led_ON;
-													HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
+  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);  
+  Buf[*Len] = 0;
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
   return (USBD_OK);
-  /* USER CODE END 6 */
+  /* USER CODE END 6 */ 
 }
+
+
+
+
+
+//static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
+//{
+//  /* USER CODE BEGIN 6 */
+//	                      memcpy (User_Data, Buf, *Len);			      // куда копируем - User_Data, откуда копируем -Buf (где лежат принятые данные), длину *Len
+//												USBD_CDC_ReceivePacket (&hUsbDeviceFS);    // функция для отправки события о том, что пакет обработан
+//												
+//												//if ( strncmp (User_Data,"OFF", 3) )
+//												if(User_Data[0]==0x04 & User_Data[1]==0x06)		
+//													//Led_OFF;
+//													HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+//												
+//							
+//                        //if (strncmp (User_Data, "ON", 2))
+//												if(User_Data[0]==5)	
+//												//Led_ON;
+//													HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+
+//  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
+//  USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+//  return (USBD_OK);
+//  /* USER CODE END 6 */
+//}
 
 /**
   * @brief  CDC_Transmit_FS

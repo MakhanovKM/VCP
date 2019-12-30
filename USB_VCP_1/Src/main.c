@@ -22,12 +22,12 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include "main.h"
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,6 +47,16 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+
+
+#define APP_RX_DATA_SIZE  64
+#define APP_TX_DATA_SIZE  64
+extern uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
+extern uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
+
+
+
 
 /* USER CODE END PV */
 
@@ -99,11 +109,49 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
-    /* USER CODE END WHILE */ 
-//	        	         HAL_GPIO_TogglePin (GPIOC, GPIO_PIN_13);      // для контрольной проверки можно поморгать светодиодом
-//            		     HAL_Delay (1);
+  
 		
+	{
+		
+		uint16_t len = strlen((const char*)UserRxBufferFS);  
+    if(len > 0)
+    {
+      strncpy((char *)UserTxBufferFS, (const char*)UserRxBufferFS, len);    
+      strcat((char *)UserTxBufferFS, "\r\n");      
+			
+      CDC_Transmit_FS((uint8_t*)UserTxBufferFS, strlen((const char*)UserTxBufferFS)); 
+			
+
+						
+			
+			
+			if (strncmp((char *)UserRxBufferFS, "ON", strlen("ON")))
+			{
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+			}
+			
+			if (strncmp((char *)UserRxBufferFS, "OFF", 3))
+			{
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			}
+			
+						
+			memset(UserRxBufferFS, 0, sizeof(UserRxBufferFS));
+      memset(UserTxBufferFS, 0, sizeof(UserTxBufferFS));
+
+    }
+    
+    HAL_Delay(200);
+	
+	}
+	
+	
+	
+	{
+//    /* USER CODE END WHILE */ 
+//	        	         HAL_GPIO_TogglePin (GPIOC, GPIO_PIN_13);      // для контрольной проверки можно поморгать светодиодом
+//            		     HAL_Delay (50);
+//		
     /* USER CODE BEGIN 3 */
 //		HAL_Delay (500);
 //		uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
